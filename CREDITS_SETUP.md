@@ -1,0 +1,12 @@
+# SONVIX AI Music – Credit-System (Vorbereitung)
+- Neukonto: 10 Gratis-Credits, einmalig pro Konto.
+- Geplanter Songpreis: 5 Credits; zwei Testsongs.
+- Einmalpakete und Monatsabos sind geplant, nicht aktiviert.
+- Erstelle zuerst ein kostenloses Supabase-Projekt.
+- Führe `supabase/migrations/001_credits.sql` im Supabase SQL Editor aus.
+- Konfiguriere E-Mail-Verifikation und Missbrauchsschutz gegen Mehrfachkonten.
+- Verbinde erst danach Auth und Wallet-Anzeige mit der Vercel-Seite.
+- Implementiere Abbuchungen/Erstattungen atomar auf dem Server mit Idempotenzschlüsseln; niemals Credits im Browser ändern.
+- Für Stripe nur verifizierte Webhooks nutzen; Zahlungsereignisse deduplizieren.
+- Echte KI-Musikgenerierung ist weiterhin **nicht** aktiv; Entwürfe dürfen keine Credits kosten.
+- Service-Role-Key niemals im Frontend oder in GitHub veröffentlichen.
