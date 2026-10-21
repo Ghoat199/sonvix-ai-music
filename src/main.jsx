@@ -10,7 +10,20 @@ const langs=['Deutsch','Englisch','Spanisch','Französisch','Instrumental'];
 function App(){const [session,setSession]=useState(null),[authEmail,setAuthEmail]=useState(''),[authPassword,setAuthPassword]=useState(''),[authMode,setAuthMode]=useState('login'),[authBusy,setAuthBusy]=useState(false),[authNotice,setAuthNotice]=useState(''),[credits,setCredits]=useState(null),[page,setPage]=useState('studio'),[prompt,setPrompt]=useState(''),[title,setTitle]=useState(''),[genre,setGenre]=useState('Pop'),[mood,setMood]=useState('Energetisch'),[language,setLanguage]=useState('Deutsch'),[instrumental,setInstrumental]=useState(false),[library,setLibrary]=useState(()=>{try{return JSON.parse(localStorage.getItem('sonvix-drafts')||'[]')}catch{return []}}),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false),[menu,setMenu]=useState(false);
 useEffect(()=>localStorage.setItem('sonvix-drafts',JSON.stringify(library)),[library]);
 useEffect(()=>{if(!supabase)return;let alive=true;supabase.auth.getSession().then(({data})=>{if(alive)setSession(data.session)});const {data:{subscription}}=supabase.auth.onAuthStateChange((_event,next)=>setSession(next));return()=>{alive=false;subscription.unsubscribe()}},[]);
-useEffect(()=>{if(!session?.access_token||!session.user?.email_confirmed_at)return;let active=true;(async()=>{try{const r=await fetch('/api/claim-signup-bonus',{method:'POST',headers:{Authorization:'Bearer '+session.access_token}});if(!r.ok||!active)return;const {data}=await supabase.from('credit_wallets').select('balance').eq('user_id',session.user.id).maybeSingle();if(active&&data)setCredits(data.balance)}catch{}})();return()=>{active=false}},[session?.access_token,session?.user?.id]);
+useEffect(()=>{if(!supabase||!session?.access_token||!session.user?.email_confirmed_at)return;let active=true;(async()=>{try{
+  // Joining the AI Music workspace is an explicit platform onboarding.
+  // Preserve any other metadata from the shared SONVIX Auth project.
+  if(session.user.user_metadata?.sonvix_signup_platform!=='ai_music'){
+    const {error}=await supabase.auth.updateUser({data:{sonvix_signup_platform:'ai_music'}});
+    if(error)throw error;
+    // USER_UPDATED refreshes the session; the next effect run claims the bonus.
+    return;
+  }
+  const r=await fetch('/api/claim-signup-bonus',{method:'POST',headers:{Authorization:'Bearer '+session.access_token}});
+  if(!r.ok||!active)return;
+  const {data}=await supabase.from('credit_wallets').select('balance').eq('user_id',session.user.id).maybeSingle();
+  if(active&&data)setCredits(data.balance);
+}catch(err){if(active)console.warn('SONVIX AI Music onboarding not completed:',err?.message||err)}})();return()=>{active=false}},[session?.access_token,session?.user?.id,session?.user?.user_metadata?.sonvix_signup_platform]);
 useEffect(()=>{if(!supabase||!session?.user){setCredits(null);return}let alive=true;supabase.from('credit_wallets').select('balance').eq('user_id',session.user.id).maybeSingle().then(({data,error})=>{if(alive)setCredits(error?null:data?.balance??0)});return()=>{alive=false}},[session?.user?.id]);
 async function handleAuth(e){e.preventDefault();if(!supabase)return;setAuthBusy(true);setAuthNotice('');try{const {error}=authMode==='signup'?await supabase.auth.signUp({email:authEmail.trim(),password:authPassword,options:{emailRedirectTo:window.location.origin,data:{sonvix_signup_platform:'ai_music'}}}):await supabase.auth.signInWithPassword({email:authEmail.trim(),password:authPassword});if(error)throw error;setAuthNotice(authMode==='signup'?'Registrierung gesendet. Bitte bestätige ggf. deine E-Mail. Die Gratis-Credits werden erst nach Aktivierung der Bonusvergabe gutgeschrieben.':'Erfolgreich angemeldet.')}catch(err){setAuthNotice(err.message||'Anmeldung fehlgeschlagen.')}finally{setAuthBusy(false)}}
 
