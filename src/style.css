@@ -10,3 +10,10 @@
 .lyricsArea{margin-top:20px}.lyricsChoices{display:flex;gap:10px;margin:10px 0 14px}.lyricsChoice{flex:1;border:1px solid #544536;border-radius:9px;background:#211d1d;color:#bdb1a8;padding:12px 10px;font-weight:700;cursor:pointer}.lyricsChoice.active{background:#493722;border-color:#d6aa66;color:#f3cc8c}.lyricsHint{font-size:12px;line-height:1.7;color:#a59ba0;margin:10px 0 22px}.lyricsArea textarea{width:100%;box-sizing:border-box;min-height:190px}
 
 .saveDraft{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:13px;margin:18px 0 10px;border:1px solid #c9a267;border-radius:10px;background:#332719;color:#f1c98e;font-weight:750;cursor:pointer}.saveDraft:hover{background:#45331f}.songActions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.songAction{display:inline-flex;align-items:center;gap:5px;border:1px solid #625039;border-radius:8px;background:#28211e;color:#e2c08c;padding:8px 10px;font-size:12px;cursor:pointer}.songAction.danger{color:#efaaa6;border-color:#714240}.songAction:hover{filter:brightness(1.2)}@media(max-width:700px){.songActions{width:100%;margin-top:10px}}
+
+/* Library controls must remain visible even on narrow displays. */
+.song{flex-wrap:wrap}
+.songbody{flex:1 1 240px}
+.songActions{display:flex!important;flex:1 0 100%;align-items:center;justify-content:flex-start;gap:10px;flex-wrap:wrap;border-top:1px solid #373039;padding-top:14px;margin-top:5px}
+.songActions .songAction{display:inline-flex!important;visibility:visible!important;opacity:1!important;min-height:38px;white-space:nowrap}
+@media(max-width:650px){.songActions{width:100%}.songActions .songAction{flex:1;justify-content:center}}
