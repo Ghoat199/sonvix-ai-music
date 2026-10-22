@@ -29,5 +29,5 @@ export default async function handler(req,res){
   if(!jobId)throw Error('eroq lieferte keine Job-ID.');
   await admin.from('sonvix_music_test_runs').update({status:'processing',provider_job_id:jobId}).eq('id',id);
   return res.status(202).json({status:'processing',jobId,message:'Ein Song mit 120 Sekunden und einem Take wurde gestartet.'});
- }catch(e){await admin.from('sonvix_music_test_runs').update({status:'unknown'}).eq('id',id);return res.status(502).json({error:'Status des Auftrags unklar. Zum Schutz des Guthabens ist kein automatischer Wiederholungsversuch erlaubt.'});}
+ }catch(e){console.error('SONVIX eroq generation failed:',e?.name||'Error',String(e?.message||'unknown').slice(0,300));await admin.from('sonvix_music_test_runs').update({status:'unknown'}).eq('id',id);return res.status(502).json({error:'Status des Auftrags unklar. Zum Schutz des Guthabens ist kein automatischer Wiederholungsversuch erlaubt.'});}
 }
